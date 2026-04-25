@@ -72,7 +72,7 @@ app.patch("/user/:userId", async (req, res) => {
       throw new Error("Updates Not Allowed");
     }
 
-    if(data?.skills.length > 10) {
+    if(data?.skills?.length > 10) {
       throw new Error("Skills cannot be more than 10");
     }
 
