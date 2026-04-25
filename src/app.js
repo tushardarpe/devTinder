@@ -3,6 +3,8 @@ const app = express();
 const connectDB = require("./config/database");
 const User = require("./models/user");
 
+console.log("app.js file");
+
 app.use(express.json());
 
 app.post("/signup", async (req, res) => {
