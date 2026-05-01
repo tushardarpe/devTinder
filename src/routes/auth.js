@@ -1,0 +1,58 @@
+const express = require("express");
+const authRouter = express.Router();
+const User = require("../models/user");
+const bcrypt = require("bcrypt");
+const { validateSignupData } = require("../utils/validations");
+
+authRouter.post("/signup", async (req, res) => {
+  // Validation of the data
+  try {
+    validateSignupData(req);
+
+    // Encrypt the password
+    const { firstName, lastName, emailId, password } = req.body;
+    const passwordHash = await bcrypt.hash(password, 10);
+    console.log(passwordHash);
+
+    // Creating a instance of the User model
+    const user = new User({
+      firstName,
+      lastName,
+      emailId,
+      password: passwordHash,
+    });
+
+    await user.save();
+    res.send("User saved successfully into the database");
+  } catch (err) {
+    res.status(400).send("ERROR: " + err.message);
+  }
+});
+
+authRouter.post("/login", async (req, res) => {
+  try {
+    const { emailId, password } = req.body;
+
+    const user = await User.findOne({ emailId: emailId });
+    if (!user) {
+      throw new Error("Invalid Credentials");
+    }
+    const isPasswordMatch = await user.validatePassword(password);
+    if (isPasswordMatch) {
+      // Create a JWT Token
+      const token = await user.getJWT();
+
+      // Add the token to the cookie and send the response back to the user
+      res.cookie("token", token, {
+        expires: new Date(Date.now() + 1 * 3600000),
+      });
+      res.send("Login Successful!");
+    } else {
+      throw new Error("Invalid Credentials");
+    }
+  } catch (err) {
+    res.status(400).send("ERROR: " + err.message);
+  }
+});
+
+module.exports = authRouter;
