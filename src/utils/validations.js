@@ -14,6 +14,46 @@ const validateSignupData = (req) => {
   }
 };
 
+const validateEditProfileData = (req) => {
+  const allowedEditFields = [
+    "firstName",
+    "lastName",
+    "age",
+    "gender",
+    "photoUrl",
+    "about",
+    "skills",
+  ];
+
+  const isEditAllowed = Object.keys(req.body).every((key) =>
+    allowedEditFields.includes(key),
+  );
+  return isEditAllowed;
+};
+
+const validateCurrentAndNewPassword = (req) => {
+  const { currentPassword, newPassword, confirmNewPassword } = req.body;
+  if (!currentPassword || !newPassword || !confirmNewPassword) {
+    throw new Error(
+      "Current Password, New Password and Confirm New Password are required",
+    );
+  } else if (
+    typeof currentPassword !== "string" ||
+    typeof newPassword !== "string" ||
+    typeof confirmNewPassword !== "string"
+  ) {
+    throw new Error("Passwords must be strings");
+  } else if (!validator.isStrongPassword(newPassword)) {
+    throw new Error("New Password is not strong enough");
+  } else if (newPassword !== confirmNewPassword) {
+    throw new Error("New Password and Confirm New Password do not match");
+  } else if (currentPassword === newPassword) {
+    throw new Error("Current Password and New Password cannot be the same");
+  }
+};
+
 module.exports = {
   validateSignupData,
+  validateEditProfileData,
+  validateCurrentAndNewPassword,
 };

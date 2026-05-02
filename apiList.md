@@ -4,12 +4,13 @@
 - POST /signup
 - POST /login
 - POST /logout
+- POST /forgotPassword
 
 
 ## profileRouter
 - GET /profile/view
 - PATCH /profile/edit
-- PATCH /profile/password (forgot password API)
+- PATCH /profile/changePassword
 
 
 ## connectionRequestRouter
